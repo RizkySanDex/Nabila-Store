@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Nabila-Shop • Katalog Affiliate</title>
+
+<style>
+  :root{--bg:#0f1012;--card:#111316;--accent:#ff6b00;--muted:#9aa4b2}
+  body{margin:0;background:#0f1012;font-family:Inter,Arial;color:#e7eef6}
+  .wrap{max-width:640px;margin:20px auto;padding:16px}
+  .card{background:#111316;border-radius:12px;padding:16px}
+
+  /* ===== PROFILE CENTER ===== */
+  .profile-box{
+    text-align:center;
+    margin-bottom:25px;
+  }
+  .avatar{
+    width:120px;
+    height:120px;
+    margin:auto;
+    border-radius:20px;
+    overflow:hidden;
+    border:3px solid rgba(255,107,0,0.4);
+  }
+  .avatar img{
+    width:100%;height:100%;object-fit:cover;
+  }
+  .profile-name{
+    font-size:24px;
+    font-weight:700;
+    margin-top:14px;
+    color:#ffb35a;
+  }
+  .profile-desc{
+    font-size:14px;
+    color:var(--muted);
+    margin-top:6px;
+    line-height:1.6;
+  }
+
+  /* list item */
+  .product{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:#0f1113;margin-top:10px}
+  .product img{width:60px;height:60px;border-radius:8px;object-fit:cover}
+  .info{flex:1;margin-left:12px}
+  .info h3{margin:0;font-size:15px}
+  .price{margin-top:6px;color:var(--accent);font-weight:700;font-size:14px}
+  .buyBtn{padding:8px 12px;background:var(--accent);color:#000;border-radius:8px;font-weight:700;text-decoration:none}
+
+  /* admin */
+  #addForm{display:none;background:#0d0f11;padding:12px;border-radius:10px;margin-top:12px}
+  #addForm input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #222;background:#0b0c0e;color:#e7eef6}
+  #saveBtn{margin-top:10px;width:100%;padding:12px;background:var(--accent);border:none;font-weight:700;border-radius:8px;color:#000}
+  #cancelBtn{margin-top:8px;width:100%;padding:12px;background:#333;border:none;border-radius:8px;color:#fff}
+
+  /* search & sort */
+  .controls{display:flex;gap:8px;margin-top:16px}
+  .controls input,.controls select{flex:1;padding:10px;background:#0d0f11;border:1px solid #222;border-radius:8px;color:#e7eef6}
+
+  footer{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+
+    <!-- ===== PROFILE CENTERED ===== -->
+    <div class="profile-box">
+      <div class="avatar">
+        <img id="profilePic" src="https://i.pinimg.com/1200x/ea/a3/7b/eaa37b5c86102634ace1adc8748d15af.jpg">
+      </div>
+      <div class="profile-name">Nabila-Shop</div>
+      <div class="profile-desc">
+        Selamat datang di katalog affiliate kami.  
+        Temukan produk pilihan terbaik untuk kamu 🧡
+      </div>
+    </div>
+
+    <!-- SEARCH + SORT -->
+    <div class="controls">
+      <input id="searchBox" type="text" placeholder="Cari produk..." />
+      <select id="sortSelect">
+        <option value="default">Urutkan</option>
+        <option value="low">Termurah</option>
+        <option value="high">Termahal</option>
+        <option value="az">A - Z</option>
+      </select>
+    </div>
+
+    <!-- ADMIN FORM -->
+    <div id="addForm">
+      <input id="p_name" type="text" placeholder="Nama produk" />
+      <input id="p_price" type="text" placeholder="Harga (Rp)" />
+      <input id="p_link" type="text" placeholder="Link Shopee Affiliate" />
+      <input id="p_img" type="text" placeholder="URL gambar produk (Shopee)" />
+      <button id="saveBtn">Simpan</button>
+      <button id="cancelBtn">Batal</button>
+    </div>
+
+    <!-- PRODUCT LIST -->
+    <div id="product-list"></div>
+
+  </div>
+
+  <footer>©Nabila-Shopp</footer>
+</div>
+
+<script>
+(function(){
+  const KEY="aisah_products_clean";
+  let products = JSON.parse(localStorage.getItem(KEY) || "[]");
+  let admin=false;
+
+  const list=document.getElementById("product-list");
+  const form=document.getElementById("addForm");
+  const p_name=document.getElementById("p_name");
+  const p_price=document.getElementById("p_price");
+  const p_link=document.getElementById("p_link");
+  const p_img=document.getElementById("p_img");
+  const search=document.getElementById("searchBox");
+  const sort=document.getElementById("sortSelect");
+
+  function save(){ localStorage.setItem(KEY,JSON.stringify(products)); }
+
+  function render(){
+    let arr=[...products];
+    const q=search.value.toLowerCase();
+    if(q) arr=arr.filter(p=>p.name.toLowerCase().includes(q));
+
+    if(sort.value==="low") arr.sort((a,b)=>num(a.price)-num(b.price));
+    if(sort.value==="high") arr.sort((a,b)=>num(b.price)-num(a.price));
+    if(sort.value==="az") arr.sort((a,b)=>a.name.localeCompare(b.name));
+
+    list.innerHTML = arr.map(p=>`
+      <div class="product">
+        <img src="${p.image}" />
+        <div class="info">
+          <h3>${p.name}</h3>
+          <div class="price">${p.price}</div>
+        </div>
+        <a class="buyBtn" href="${p.link}" target="_blank">Beli</a>
+      </div>
+    `).join("");
+  }
+
+  function num(s){return parseInt(String(s).replace(/[^0-9]/g,""))||0}
+
+  document.addEventListener("keydown",e=>{
+    if(e.shiftKey && e.key.toLowerCase()==='a'){
+      admin=!admin;
+      form.style.display = admin? 'block':'none';
+    }
+  });
+
+  document.getElementById("saveBtn").onclick=function(){
+    if(!p_name.value||!p_link.value||!p_img.value){
+      alert("Nama, link, dan gambar wajib diisi!");
+      return;
+    }
+    const obj={
+      name:p_name.value,
+      price:p_price.value,
+      link:p_link.value,
+      image:p_img.value
+    };
+    products.unshift(obj);
+    save(); render();
+    p_name.value=p_price.value=p_link.value=p_img.value="";
+    form.style.display="none"; admin=false;
+  };
+
+  document.getElementById("cancelBtn").onclick=function(){
+    form.style.display="none"; admin=false;
+  };
+
+  search.oninput=render;
+  sort.onchange=render;
+
+  render();
+})();
+</script>
+
+</body>
+</html>
