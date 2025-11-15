@@ -48,12 +48,6 @@
   .price{margin-top:6px;color:var(--accent);font-weight:700;font-size:14px}
   .buyBtn{padding:8px 12px;background:var(--accent);color:#000;border-radius:8px;font-weight:700;text-decoration:none}
 
-  /* admin */
-  #addForm{display:none;background:#0d0f11;padding:12px;border-radius:10px;margin-top:12px}
-  #addForm input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #222;background:#0b0c0e;color:#e7eef6}
-  #saveBtn{margin-top:10px;width:100%;padding:12px;background:var(--accent);border:none;font-weight:700;border-radius:8px;color:#000}
-  #cancelBtn{margin-top:8px;width:100%;padding:12px;background:#333;border:none;border-radius:8px;color:#fff}
-
   /* search & sort */
   .controls{display:flex;gap:8px;margin-top:16px}
   .controls input,.controls select{flex:1;padding:10px;background:#0d0f11;border:1px solid #222;border-radius:8px;color:#e7eef6}
@@ -65,7 +59,6 @@
 <div class="wrap">
   <div class="card">
 
-    <!-- ===== PROFILE CENTERED ===== -->
     <div class="profile-box">
       <div class="avatar">
         <img id="profilePic" src="https://i.pinimg.com/1200x/ea/a3/7b/eaa37b5c86102634ace1adc8748d15af.jpg">
@@ -77,7 +70,6 @@
       </div>
     </div>
 
-    <!-- SEARCH + SORT -->
     <div class="controls">
       <input id="searchBox" type="text" placeholder="Cari produk..." />
       <select id="sortSelect">
@@ -88,17 +80,6 @@
       </select>
     </div>
 
-    <!-- ADMIN FORM -->
-    <div id="addForm">
-      <input id="p_name" type="text" placeholder="Nama produk" />
-      <input id="p_price" type="text" placeholder="Harga (Rp)" />
-      <input id="p_link" type="text" placeholder="Link Shopee Affiliate" />
-      <input id="p_img" type="text" placeholder="URL gambar produk (Shopee)" />
-      <button id="saveBtn">Simpan</button>
-      <button id="cancelBtn">Batal</button>
-    </div>
-
-    <!-- PRODUCT LIST -->
     <div id="product-list"></div>
 
   </div>
@@ -108,20 +89,35 @@
 
 <script>
 (function(){
-  const KEY="aisah_products_clean";
-  let products = JSON.parse(localStorage.getItem(KEY) || "[]");
-  let admin=false;
+  // 1. INI ADALAH TEMPAT ANDA MEMASUKKAN DATA PRODUK SECARA HARDCODED
+  // HILANGKAN SEMUA PRODUK CONTOH INI DAN GANTI DENGAN PRODUK ANDA
+  let products = [
+      {
+          name: "Hadju Tunik Brukat Bordir Sapto / Tunik Brokat Tali Kancing Mutiara Payet Diamond / Baju Kondangan, Wisuda, Seragaman, Bridesmaids,",
+          price: "Rp50.000",
+          link: "https://s.shopee.co.id/8zxPCWY3W9", // Ganti dengan Link Shopee Affiliate Anda
+          image: "https://down-id.img.susercontent.com/file/id-11134207-7rasa-m4ggx52njag3ae.webp" // Ganti dengan URL Gambar Publik Anda
+      },
+      {
+          name: "ALINA tunik by ZALFA OUTFIT / kemeja panjang / tunik polos / tunik rayon",
+          price: "Rp85.000",
+          link: "https://s.shopee.co.id/8KhiPQ2q5W", // Ganti dengan Link Shopee Affiliate Anda
+          image: "https://down-id.img.susercontent.com/file/sg-11134201-22110-qcdsgao1vikvf4@resize_w450_nl.webp" // Ganti dengan URL Gambar Publik Anda
+      },
+      // Tambahkan produk Anda berikutnya di sini dengan format yang sama:
+      // {
+      //     name: "Nama Produk",
+      //     price: "Harga",
+      //     link: "Link Affiliate",
+      //     image: "Link Gambar Publik"
+      // }
+  ];
 
   const list=document.getElementById("product-list");
-  const form=document.getElementById("addForm");
-  const p_name=document.getElementById("p_name");
-  const p_price=document.getElementById("p_price");
-  const p_link=document.getElementById("p_link");
-  const p_img=document.getElementById("p_img");
   const search=document.getElementById("searchBox");
   const sort=document.getElementById("sortSelect");
 
-  function save(){ localStorage.setItem(KEY,JSON.stringify(products)); }
+  // Fungsi save() (localStorage) telah dihapus
 
   function render(){
     let arr=[...products];
@@ -134,7 +130,7 @@
 
     list.innerHTML = arr.map(p=>`
       <div class="product">
-        <img src="${p.image}" />
+        <img src="${p.image}" onerror="this.src='https://via.placeholder.com/60?text=Error'" />
         <div class="info">
           <h3>${p.name}</h3>
           <div class="price">${p.price}</div>
@@ -146,33 +142,9 @@
 
   function num(s){return parseInt(String(s).replace(/[^0-9]/g,""))||0}
 
-  document.addEventListener("keydown",e=>{
-    if(e.shiftKey && e.key.toLowerCase()==='a'){
-      admin=!admin;
-      form.style.display = admin? 'block':'none';
-    }
-  });
+  // 2. LOGIKA UNTUK ADMIN PANEL (KEYBOARD SHIFT+A) TELAH DIHAPUS
 
-  document.getElementById("saveBtn").onclick=function(){
-    if(!p_name.value||!p_link.value||!p_img.value){
-      alert("Nama, link, dan gambar wajib diisi!");
-      return;
-    }
-    const obj={
-      name:p_name.value,
-      price:p_price.value,
-      link:p_link.value,
-      image:p_img.value
-    };
-    products.unshift(obj);
-    save(); render();
-    p_name.value=p_price.value=p_link.value=p_img.value="";
-    form.style.display="none"; admin=false;
-  };
-
-  document.getElementById("cancelBtn").onclick=function(){
-    form.style.display="none"; admin=false;
-  };
+  // 3. LOGIKA UNTUK TOMBOL SIMPAN DAN BATAL TELAH DIHAPUS
 
   search.oninput=render;
   sort.onchange=render;
